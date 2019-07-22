@@ -38,6 +38,7 @@ development environment you should only add them here.
 # config/dev.exs
 config :k8s_deploy, K8SDeploy.Build,
   app_name: :my_project,
+  elixir_version: "1.8.1",
   docker_image: "docker.registry.url/my_project:production"
 ```
 
@@ -58,3 +59,15 @@ The build image can be run with
 docker run docker.registry.url/my_project:production
 ```
 However, this will probably fail if your project relies on environment variables at runtime.
+
+## Troubleshooting
+
+### The webserver does not start
+
+Ensure that you have set `server: true` in you endpoint:
+
+```elixir
+# config/prod.exs
+config :my_app, MyApp.Endpoint,
+  server: true
+```

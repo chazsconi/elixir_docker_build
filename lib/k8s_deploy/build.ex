@@ -1,5 +1,6 @@
 defmodule K8SDeploy.Build do
   import K8SDeploy.Dockerfile
+  require Logger
 
   @doc "Generates the Dockerfile and .dockerignore and then builds the docker image"
   def run do
@@ -33,7 +34,7 @@ defmodule K8SDeploy.Build do
   end
 
   defp build_stage do
-    from("elixir:1.8.1 as builder")
+    from("elixir:#{elixir_version()} as builder")
     |> run([
       "apt-get update",
       "apt-get install -y curl",
@@ -41,6 +42,8 @@ defmodule K8SDeploy.Build do
       "apt-get install -y nodejs"
     ])
     |> run(["mix local.hex --force", "mix local.rebar --force"])
+    |> copy_ssh_keys()
+    |> before_deps_get()
     |> workdir("/app")
     |> env("MIX_ENV=prod")
     |> copy("mix.exs /app/")
@@ -55,10 +58,7 @@ defmodule K8SDeploy.Build do
     |> run(["cd assets", "npm install"])
     |> run("mkdir -p priv/static")
     |> copy("assets /app/assets")
-    |> run([
-      "cd assets",
-      "node_modules/webpack/bin/webpack.js --mode production --optimize-minimize"
-    ])
+    |> compile_assets()
     |> copy("/ /app")
     |> run("mix compile")
     |> run("mix phx.digest")
@@ -68,6 +68,47 @@ defmodule K8SDeploy.Build do
       "mkdir /export",
       "tar -xf \"$RELEASE_DIR/#{app_name()}.tar.gz\" -C /export"
     ])
+  end
+
+  defp copy_ssh_keys(df) do
+    if File.exists?("deploy/ssh_keys") do
+      df
+      |> copy("deploy/ssh_keys/* /root/.ssh/")
+      |> run("chmod 400 /root/.ssh/*_rsa")
+    else
+      df
+    end
+  end
+
+  defp compile_assets(df) do
+    {df, plugins} =
+      plugins()
+      |> Enum.reduce({df, []}, fn plugin, {df, plugins} ->
+        case plugin.assets_compile_command() do
+          nil -> {df, plugins}
+          command -> {run(df, command), [plugin | plugins]}
+        end
+      end)
+
+    case plugins do
+      [] ->
+        Logger.warn("No asset compile command given")
+
+      [_] ->
+        :ok
+
+      _ ->
+        Logger.warn("Multiple asset compile commands given from #{inspect(plugins)}")
+    end
+
+    df
+  end
+
+  defp before_deps_get(df) do
+    plugins()
+    |> Enum.reduce(df, fn plugin, df ->
+      plugin.before_deps_get(df)
+    end)
   end
 
   def release_stage(df) do
@@ -83,22 +124,47 @@ defmodule K8SDeploy.Build do
   end
 
   defp generate_dockerignore do
+    patterns = base_docker_ignore() ++ plugins_extra_dockerignore() ++ extra_dockerignore()
+    Enum.join(patterns, "\n")
+  end
+
+  defp base_docker_ignore do
     ~w(*
       !/assets
       /assets/node_modules
       !/config
-      !/deploy/*/keys
+      !/deploy/ssh_keys
       !/lib
       !/priv
       /priv/static
       !/rel
       !/mix.*
     )
-    |> Enum.join("\n")
   end
 
-  defp app_name, do: config(:app_name)
+  def plugins_extra_dockerignore do
+    plugins()
+    |> Enum.map(& &1.extra_dockerignore())
+    |> List.flatten()
+  end
 
+  defp extra_dockerignore do
+    config(:extra_dockerignore) || []
+  end
+
+  def assets_source_path, do: "/assets"
+  def assets_dest_path, do: "/app/assets"
+
+  defp plugins do
+    config(:plugins)
+    |> Enum.map(fn
+      {mod, _config} -> mod
+      mod -> mod
+    end)
+  end
+
+  def app_name, do: config(:app_name)
+  defp elixir_version, do: config(:elixir_version)
   defp docker_image, do: config(:docker_image)
 
   defp config(key) do
