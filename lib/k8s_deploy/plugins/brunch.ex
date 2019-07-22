@@ -3,10 +3,10 @@ defmodule K8SDeploy.Plugins.Brunch do
   use K8SDeploy.Plugins
 
   @impl K8SDeploy.Plugins
-  def assets_compile_command do
+  def assets_compile_command(config) do
     [
-      "#{assets_dest_path()}/node_modules/brunch/bin/brunch build --production #{
-        assets_dest_path()
+      "#{Config.assets_dest_path(config)}/node_modules/brunch/bin/brunch build --production #{
+        Config.assets_dest_path(config)
       }"
     ]
   end

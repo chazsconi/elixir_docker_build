@@ -4,16 +4,16 @@ defmodule K8SDeploy.Dockerfile do
   """
 
   alias __MODULE__, as: DF
-  defstruct instructions: []
+  alias K8SDeploy.Config
+  defstruct instructions: [], config: %Config{}
 
   @doc "Adds an arbitary instruction"
   def add_line(%DF{instructions: instructions} = df, instuction, arg) do
     %DF{df | instructions: instructions ++ [{instuction, arg}]}
   end
 
-  def from(source) do
-    %DF{}
-    |> add_line("FROM", source)
+  def new(%Config{} = config) do
+    %DF{config: config}
   end
 
   def from(%DF{} = df, source) do

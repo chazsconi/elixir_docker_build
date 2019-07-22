@@ -2,18 +2,18 @@ defmodule K8SDeploy.Plugins.Elm do
   use K8SDeploy.Plugins
 
   @impl K8SDeploy.Plugins
-  def extra_dockerignore do
-    ~w(#{assets_source_path()}/elm_build #{assets_source_path()}/elm-stuff)
+  def extra_dockerignore(config) do
+    ~w(#{Config.assets_source_path(config)}/elm_build #{Config.assets_source_path(config)}/elm-stuff)
   end
 
   @impl K8SDeploy.Plugins
   def before_deps_get(df) do
-    if config(:use_elm_install), do: install_elm_install(df), else: df
+    if plugin_config(df, :use_elm_install), do: install_elm_install(df), else: df
   end
 
   @impl K8SDeploy.Plugins
   def before_assets_compile(df) do
-    if config(:use_elm_install), do: run_elm_install(df), else: df
+    if plugin_config(df, :use_elm_install), do: run_elm_install(df), else: df
   end
 
   defp install_elm_install(df) do
@@ -23,7 +23,9 @@ defmodule K8SDeploy.Plugins.Elm do
 
   defp run_elm_install(df) do
     df
-    |> copy("#{assets_source_path()}/elm-package.json /app/#{assets_dest_path()}/")
-    |> run(["cd #{assets_dest_path()}", "elm-install"])
+    |> copy(
+      "#{Config.assets_source_path(df)}/elm-package.json /app/#{Config.assets_dest_path(df)}/"
+    )
+    |> run(["cd #{Config.assets_dest_path(df)}", "elm-install"])
   end
 end
