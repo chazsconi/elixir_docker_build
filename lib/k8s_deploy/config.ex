@@ -4,9 +4,15 @@ defmodule K8SDeploy.Config do
   alias K8SDeploy.Dockerfile
   defstruct base_config: [], plugin_configs: []
 
-  @doc "Load the config from the application env"
-  def load_from_application_env do
+  @doc """
+  Load the config from the application env
+
+  ## Options
+   * `env` - environment to be used.  Defaults to `prod`
+  """
+  def load_from_application_env(opts) do
     config = Application.get_env(:k8s_deploy, K8SDeploy.Build)
+    env = Keyword.fetch!(opts, :env)
 
     plugin_configs =
       config[:plugins]
@@ -15,7 +21,15 @@ defmodule K8SDeploy.Config do
         plugin -> {plugin, Application.get_env(:k8s_deploy, plugin, [])}
       end)
 
-    %Config{base_config: Keyword.delete(config, :plugins), plugin_configs: plugin_configs}
+    base_config =
+      config
+      |> Keyword.delete(:plugins)
+      |> Keyword.put(:env, env)
+
+    %Config{
+      base_config: base_config,
+      plugin_configs: plugin_configs
+    }
   end
 
   @doc "Get the config for a given plugin and key"
@@ -46,9 +60,30 @@ defmodule K8SDeploy.Config do
 
   def config(%Dockerfile{config: config}, key), do: config(config, key)
 
-  def assets_source_path(_), do: "/assets"
-  def assets_dest_path(_), do: "/app/assets"
+  # Path to assets within project.  Defaults to `assets`
+  defp assets_path(context) do
+    path = config(context, :assets_path) || "assets"
+    String.trim_leading(path, "/")
+  end
 
+  @doc "Source path of assets (used for docker `COPY`)"
+  def assets_source_path(context), do: "/" <> assets_path(context)
+
+  @doc "Destination path of assets in docker build image"
+  def assets_dest_path(context), do: "/app/#{assets_path(context)}"
+
+  @doc "Name of the app"
   def app_name(context), do: config(context, :app_name)
+
+  @doc "List of umbrella apps in project"
+  def umbrella_apps(context), do: config(context, :umbrella_apps) || []
+
+  @doc "Returns `true` if the project is an umbrella app"
+  def umbrella_app?(context), do: umbrella_apps(context) != nil
+
+  @doc "Project elixir version"
   def elixir_version(context), do: config(context, :elixir_version)
+
+  @doc "Selected `MIX_ENV`"
+  def mix_env(context), do: config(context, :env)
 end

@@ -13,7 +13,10 @@ defmodule K8SDeploy.DockerfileGenerator do
 
   @doc "Generates the .dockerignore returning a list of entries"
   def generate_dockerignore(%Config{} = config) do
-    base_docker_ignore(config) ++ plugins_extra_dockerignore(config) ++ extra_dockerignore(config)
+    base_docker_ignore(config) ++
+      assets_docker_ignore(config) ++
+      plugins_extra_dockerignore(config) ++
+      extra_dockerignore(config)
   end
 
   defp build_stage(df) do
@@ -29,29 +32,36 @@ defmodule K8SDeploy.DockerfileGenerator do
     |> copy_ssh_keys()
     |> before_deps_get()
     |> workdir("/app")
-    |> env("MIX_ENV=prod")
-    |> copy("mix.exs /app/")
-    |> copy("mix.lock /app/")
+    |> env("MIX_ENV=#{Config.mix_env(df)}")
+    |> copy("mix.* /app/")
+    |> copy_umbrella_app_mix_files(Config.umbrella_apps(df))
 
     # This speeds up rebuilding the images for code changes
     # by compiling the dependencies first which should not change often
     |> run(["mix deps.get", "mix deps.compile"])
 
     # Speed up installing of node files
-    |> copy("assets/*.json /app/assets/")
-    |> run(["cd assets", "npm install"])
-    |> run("mkdir -p priv/static")
-    |> copy("assets /app/assets")
+    |> install_assets_deps()
+    |> before_assets_copy()
+    |> copy_assets()
     |> compile_assets()
     |> copy("/ /app")
     |> run("mix compile")
     |> run("mix phx.digest")
     |> run("mix distillery.release")
     |> run([
-      "RELEASE_DIR=`ls -d _build/prod/rel/#{Config.app_name(df)}/releases/*/`",
+      "RELEASE_DIR=`ls -d _build/#{Config.mix_env(df)}/rel/#{Config.app_name(df)}/releases/*/`",
       "mkdir /export",
       "tar -xf \"$RELEASE_DIR/#{Config.app_name(df)}.tar.gz\" -C /export"
     ])
+  end
+
+  defp copy_umbrella_app_mix_files(df, []), do: df
+
+  defp copy_umbrella_app_mix_files(df, [umbrella_app | rest]) do
+    df
+    |> copy("/apps/#{umbrella_app}/mix.exs /app/apps/#{umbrella_app}/")
+    |> copy_umbrella_app_mix_files(rest)
   end
 
   defp copy_ssh_keys(df) do
@@ -62,6 +72,24 @@ defmodule K8SDeploy.DockerfileGenerator do
     else
       df
     end
+  end
+
+  defp install_assets_deps(df) do
+    source = Config.assets_source_path(df)
+    dest = Config.assets_dest_path(df)
+
+    df
+    |> copy("#{source}/*.json #{dest}/")
+    |> run(["cd #{dest}", "npm install"])
+  end
+
+  defp copy_assets(df) do
+    source = Config.assets_source_path(df)
+    dest = Config.assets_dest_path(df)
+
+    df
+    |> run("mkdir -p priv/static")
+    |> copy("#{source} #{dest}")
   end
 
   defp compile_assets(df) do
@@ -95,6 +123,13 @@ defmodule K8SDeploy.DockerfileGenerator do
     end)
   end
 
+  defp before_assets_copy(df) do
+    Config.plugins(df)
+    |> Enum.reduce(df, fn plugin, df ->
+      plugin.before_assets_copy(df)
+    end)
+  end
+
   def release_stage(df) do
     df
     |> from("ubuntu:bionic")
@@ -109,8 +144,7 @@ defmodule K8SDeploy.DockerfileGenerator do
 
   defp base_docker_ignore(_config) do
     ~w(*
-      !/assets
-      /assets/node_modules
+      !/apps
       !/config
       !/deploy/ssh_keys
       !/lib
@@ -118,6 +152,13 @@ defmodule K8SDeploy.DockerfileGenerator do
       /priv/static
       !/rel
       !/mix.*
+    )
+  end
+
+  defp assets_docker_ignore(config) do
+    ~w(
+    !#{Config.assets_source_path(config)}
+    #{Config.assets_source_path(config)}/node_modules
     )
   end
 

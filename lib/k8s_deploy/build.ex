@@ -6,11 +6,15 @@ defmodule K8SDeploy.Build do
   require Logger
 
   @doc "Generates the Dockerfile and .dockerignore and then builds the docker image"
-  def run do
-    config = Config.load_from_application_env()
+  def run(opts) do
+    config = Config.load_from_application_env(opts)
 
     DockerfileGenerator.generate_dockerignore(config)
     |> save_dockerignore()
+
+    Mix.Shell.IO.info("Generated Dockerfile..")
+
+    Mix.Shell.IO.info("Starting docker build..")
 
     DockerfileGenerator.generate_dockerfile(config)
     |> save_dockerfile()
