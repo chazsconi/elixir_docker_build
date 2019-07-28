@@ -1,4 +1,7 @@
 defmodule K8SDeploy.Plugins.Webpack do
+  @moduledoc """
+  Complies assets using webpack
+  """
   use K8SDeploy.Plugins
 
   @impl K8SDeploy.Plugins
