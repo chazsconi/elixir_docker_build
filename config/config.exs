@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :k8s_deploy, key: :value
+#     config :docker_build, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:k8s_deploy, :key)
+#     Application.get_env(:docker_build, :key)
 #
 # You can also configure a third-party app:
 #

@@ -1,7 +1,7 @@
-defmodule K8SDeploy.Config do
+defmodule DockerBuild.Config do
   @moduledoc "Stores config for builder and plugins"
   alias __MODULE__
-  alias K8SDeploy.Dockerfile
+  alias DockerBuild.Dockerfile
   defstruct base_config: [], plugin_configs: []
 
   @doc """
@@ -11,14 +11,14 @@ defmodule K8SDeploy.Config do
    * `env` - environment to be used.  Defaults to `prod`
   """
   def load_from_application_env(opts) do
-    config = Application.get_env(:k8s_deploy, K8SDeploy.Build)
+    config = Application.get_env(:docker_build, DockerBuild.Build)
     env = Keyword.fetch!(opts, :env)
 
     plugin_configs =
       config[:plugins]
       |> Enum.map(fn
         {plugin, config} -> {plugin, config}
-        plugin -> {plugin, Application.get_env(:k8s_deploy, plugin, [])}
+        plugin -> {plugin, Application.get_env(:docker_build, plugin, [])}
       end)
 
     base_config =

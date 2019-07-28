@@ -1,10 +1,10 @@
-defmodule K8SDeploy.Dockerfile do
+defmodule DockerBuild.Dockerfile do
   @moduledoc """
   Create a dockerfile
   """
 
   alias __MODULE__, as: DF
-  alias K8SDeploy.Config
+  alias DockerBuild.Config
   defstruct instructions: [], config: %Config{}
 
   @doc "Adds an arbitary instruction"

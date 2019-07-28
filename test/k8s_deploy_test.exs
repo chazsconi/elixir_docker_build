@@ -1,3 +1,3 @@
-defmodule K8SDeployTest do
+defmodule DockerBuildTest do
   use ExUnit.Case
 end

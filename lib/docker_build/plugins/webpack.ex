@@ -1,10 +1,10 @@
-defmodule K8SDeploy.Plugins.Webpack do
+defmodule DockerBuild.Plugins.Webpack do
   @moduledoc """
   Complies assets using webpack
   """
-  use K8SDeploy.Plugins
+  use DockerBuild.Plugins
 
-  @impl K8SDeploy.Plugins
+  @impl DockerBuild.Plugins
   def assets_compile_command(config) do
     [
       "cd #{Config.assets_dest_path(config)}",

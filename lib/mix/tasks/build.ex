@@ -1,6 +1,6 @@
-defmodule Mix.Tasks.K8s.Build do
+defmodule Mix.Tasks.Docker.Build do
   use Mix.Task
-  alias K8SDeploy.Build
+  alias DockerBuild.Build
 
   @shortdoc "Builds a docker image for the project"
 
@@ -9,7 +9,7 @@ defmodule Mix.Tasks.K8s.Build do
 
   ## Example
 
-  `mix k8s_deploy.build dev`
+  `mix docker.build dev`
   """
 
   @doc false

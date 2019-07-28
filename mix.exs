@@ -1,9 +1,9 @@
-defmodule K8SDeploy.MixProject do
+defmodule DockerBuild.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :k8s_deploy,
+      app: :docker_build,
       version: "0.1.0",
       elixir: ">= 1.6.0",
       start_permanent: Mix.env() == :prod,

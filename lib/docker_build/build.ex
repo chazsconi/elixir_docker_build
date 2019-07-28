@@ -1,8 +1,8 @@
-defmodule K8SDeploy.Build do
+defmodule DockerBuild.Build do
   @moduledoc "Generates and builds the Dockerfile"
-  alias K8SDeploy.DockerfileGenerator
-  alias K8SDeploy.Dockerfile
-  alias K8SDeploy.Config
+  alias DockerBuild.DockerfileGenerator
+  alias DockerBuild.Dockerfile
+  alias DockerBuild.Config
   require Logger
 
   @doc "Generates the Dockerfile and .dockerignore and then builds the docker image"
@@ -39,6 +39,6 @@ defmodule K8SDeploy.Build do
   defp docker_image, do: config(:docker_image)
 
   defp config(key) do
-    Application.get_env(:k8s_deploy, __MODULE__)[key]
+    Application.get_env(:docker_build, __MODULE__)[key]
   end
 end

@@ -1,16 +1,16 @@
-# K8SDeploy
+# DockerBuild
 
-Library for building and deploying Phoenix applications to Kubernetes
+Library for building docker images.
 
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `k8s_deploy` to your list of dependencies in `mix.exs`:
+by adding `docker_build` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:k8s_deploy, "~> 0.1.0", runtime: false, only: :dev}
+    {:docker_build, "~> 0.1.0", runtime: false, only: :dev}
   ]
 end
 ```
@@ -37,8 +37,8 @@ you are using webpack to compile assets.
 
 ```elixir
 # config/dev.exs
-config :k8s_deploy, K8SDeploy.Build,
-  plugins: [K8SDeploy.Plugins.Webpack],
+config :docker_build, DockerBuild.Build,
+  plugins: [DockerBuild.Plugins.Webpack],
   app_name: :my_project,
   elixir_version: "1.8.1",
   docker_image: "docker.registry.url/my_project:production"
@@ -49,7 +49,7 @@ config :k8s_deploy, K8SDeploy.Build,
 To build a release docker image:
 
 ```bash
-mix k8s.build
+mix docker.build
 ```
 
 The task generates a `.dockerignore` file in the root of the project so you will probably
@@ -82,7 +82,7 @@ a list of config values to the plugin:
 
 ```elixir
 # config/dev.exs
-config :k8s_deploy, K8SDeploy.Build,
+config :docker_build, DockerBuild.Build,
   plugins: [PluginModule1, {PluginModule2, foo1: :bar1, foo2: :bar2}`, PluginModule3],
   ...
 ```
@@ -92,11 +92,11 @@ If complex config is required the plugin can just be listed with its module name
 
 ```elixir
 # config/dev.exs
-config :k8s_deploy, K8SDeploy.Build,
+config :docker_build, DockerBuild.Build,
   plugins: [PluginModule1, PluginModule2, PluginModule3],
   ...
 
-config :k8s_deploy, PluginModule2,
+config :docker_build, PluginModule2,
   foo1: :bar1,
   foo2: :bar2
 ```
@@ -124,3 +124,16 @@ The environment to build under (i.e. what `MIX_ENV` is set to in Docker) is set 
 1. When building a `prod` release the project and dependencies do not need to be compiled locally with `MIX_ENV=prod` just to run the mix task.
 
 2. The configuration for the build can be placed in `config/dev.exs` and so will not be included in `sys.config` when the release is built by Distillery.  You may have secrets in here you do not want in your final docker image.
+
+## TODO
+
+### Check mandatory config params
+
+Currently a protocol error is shown if the config is missing.
+
+### Optional Assets
+
+Either:
+  * Add assets as a plugin, and have some plugin hierarchy, deps resolution or be able to set
+  plugin config options from another plugin - e.g. `assets_compile_command:` from webpack/brunch plugin.
+  * Make `assets_path:` config option mandatory so this can be used for apps without assets.

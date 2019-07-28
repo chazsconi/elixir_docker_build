@@ -1,4 +1,4 @@
-defmodule K8SDeploy.Plugins do
+defmodule DockerBuild.Plugins do
   @moduledoc """
   A behaviour for a plugin system allowing functionality to be extended when building the docker image.
 
@@ -9,17 +9,17 @@ defmodule K8SDeploy.Plugins do
   ## Creating a plugin
 
   1. Create module e.g. `MyProject.MyPlugin`
-  2. Add `use K8SDeploy.Plugins`
+  2. Add `use DockerBuild.Plugins`
   3. Implement the required callbacks to modify the docker file or `.dockerignore`
   4. To fetch a plugin config value with the plugin callback use `plugin_config(context, key)` where
   `context` is either the `config` or `df` parameter passed to the callback.
   """
 
   @typedoc "The dockerfile"
-  @type df() :: %K8SDeploy.Dockerfile{}
+  @type df() :: %DockerBuild.Dockerfile{}
 
   @typedoc "The dockerfile config"
-  @type config() :: %K8SDeploy.Config{}
+  @type config() :: %DockerBuild.Config{}
 
   @doc """
   Invoked when creating the .dockerignore file.
@@ -48,9 +48,9 @@ defmodule K8SDeploy.Plugins do
 
   defmacro __using__(_opts) do
     quote do
-      import K8SDeploy.Dockerfile
-      alias K8SDeploy.Config
-      @behaviour K8SDeploy.Plugins
+      import DockerBuild.Dockerfile
+      alias DockerBuild.Config
+      @behaviour DockerBuild.Plugins
 
       @doc false
       def extra_dockerignore(config), do: []
@@ -67,7 +67,7 @@ defmodule K8SDeploy.Plugins do
       @doc false
       def plugin_config(context, key), do: Config.plugin_config(context, __MODULE__, key)
 
-      defoverridable K8SDeploy.Plugins
+      defoverridable DockerBuild.Plugins
     end
   end
 end

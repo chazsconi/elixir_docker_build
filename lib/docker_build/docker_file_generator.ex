@@ -1,7 +1,7 @@
-defmodule K8SDeploy.DockerfileGenerator do
+defmodule DockerBuild.DockerfileGenerator do
   @moduledoc "Generates a Dockerfile and .dockerignore"
-  import K8SDeploy.Dockerfile
-  alias K8SDeploy.Config
+  import DockerBuild.Dockerfile
+  alias DockerBuild.Config
   require Logger
 
   @doc "Generates the Dockerfile returning `%Dockerfile{}`"
