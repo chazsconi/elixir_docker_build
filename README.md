@@ -55,6 +55,8 @@ mix docker.build
 The task generates a `.dockerignore` file in the root of the project so you will probably
 want to add this to `.gitignore`.
 
+A two-stage build is used so the final docker image will not contain source code.
+
 ### Run docker image
 The build image can be run with
 ```bash
@@ -69,8 +71,21 @@ However, this will probably fail if your project relies on environment variables
 The following additional config values are available:
 
   * `:assets_path` - path the assets within your project. Defaults to `assets`.
+  * `:extra_dockerignore` - a list of paths to add to the generated `.dockerignore` files. By
+  default all files are excluded so it is likely you will want to use this to explicitly
+  include files by prefixing them with `!`.
   * `:umbrella_apps` - list of apps in an umbrella project.  If not set then the project is
   assumed to be a non-umbrella project.
+
+### Adding ssh keys to the build stage
+
+You can add these in `deploy/ssh_keys`.  Typically you would add a private and public key, e.g.
+`id_rsa` and `id_rsa.pub`.  They will be copied to the `/root/.ssh` folder in the build
+stage docker image.
+
+The typical use case for this is a deployment key to fetch some dependencies from a private
+git repo.  In this case you may also need to use the `DockerBuild.Plugins.KnownHosts` plugin
+to add the host of the source repo.
 
 ## Plugin System
 
@@ -137,3 +152,5 @@ Either:
   * Add assets as a plugin, and have some plugin hierarchy, deps resolution or be able to set
   plugin config options from another plugin - e.g. `assets_compile_command:` from webpack/brunch plugin.
   * Make `assets_path:` config option mandatory so this can be used for apps without assets.
+
+### Extract SSH Keys copy to plugin
