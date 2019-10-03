@@ -87,6 +87,25 @@ The typical use case for this is a deployment key to fetch some dependencies fro
 git repo.  In this case you may also need to use the `DockerBuild.Plugins.KnownHosts` plugin
 to add the host of the source repo.
 
+For example for a dependency that is in a private Github repo:
+
+1. Generate a new key pair:
+```
+mkdir -p deploy/ssh_keys
+ssh-keygen -f deploy/ssh_keys/id_rsa -N "" -C my_project-docker-build
+```
+
+2. Go to the deployment keys section for your dependency
+in Github's UI (*Settings -> Deploy keys*) and add a new key with the
+contents of `id_rsa.pub`.
+
+3. Add `github.com` to the `KnownHosts` plugin.
+```
+plugins: [
+  {DockerBuild.Plugins.KnownHosts, hosts: ["github.com"]}
+]
+```
+
 ## Plugin System
 
 A plugin system is available to extend the dockerfile that is generated via various callbacks.
@@ -119,6 +138,11 @@ config :docker_build, PluginModule2,
 There are several plugins already included in the project.
 
 ## Troubleshooting
+
+### Host key verification failed error
+
+If you see this when fetching dependencies, ensure that you have the source repo
+added to `DockerBuild.Plugins.KnownHosts` plugin.
 
 ### The webserver does not start
 
