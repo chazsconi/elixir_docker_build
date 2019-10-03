@@ -28,7 +28,10 @@ defmodule Mix.Tasks.Docker.Build do
       end
 
     Mix.shell().info("Using env #{env}")
-    dockerfile = Build.run(env: env)
-    Mix.shell().info(to_string(dockerfile))
+
+    case Build.run(env: env) do
+      0 -> Mix.shell().info("Build done")
+      n -> Mix.raise("Build failed. Exit code #{n}")
+    end
   end
 end
