@@ -14,6 +14,7 @@ defmodule DockerBuild.DockerfileGenerator do
   @doc "Generates the .dockerignore returning a list of entries"
   def generate_dockerignore(%Config{} = config) do
     base_docker_ignore(config) ++
+      umbrella_app_docker_ignore(config) ++
       assets_docker_ignore(config) ++
       plugins_extra_dockerignore(config) ++
       extra_dockerignore(config)
@@ -153,6 +154,11 @@ defmodule DockerBuild.DockerfileGenerator do
       !/rel
       !/mix.*
     )
+  end
+
+  def umbrella_app_docker_ignore(config) do
+    Config.umbrella_apps(config)
+    |> Enum.map(&"/apps/#{&1}/priv/static")
   end
 
   defp assets_docker_ignore(config) do
