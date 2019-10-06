@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.2
+
+* Bug fixes
+  * Add priv/static to .dockerignore for umbrella apps
+
 ## v0.1.1
 
 * Bug fixes
