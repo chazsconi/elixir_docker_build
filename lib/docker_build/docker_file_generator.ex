@@ -31,6 +31,7 @@ defmodule DockerBuild.DockerfileGenerator do
     ])
     |> run(["mix local.hex --force", "mix local.rebar --force"])
     |> copy_ssh_keys()
+    |> copy_netrc()
     |> before_deps_get()
     |> workdir("/app")
     |> env("MIX_ENV=#{Config.mix_env(df)}")
@@ -70,6 +71,15 @@ defmodule DockerBuild.DockerfileGenerator do
       df
       |> copy("deploy/ssh_keys/* /root/.ssh/")
       |> run("chmod 400 /root/.ssh/*_rsa")
+    else
+      df
+    end
+  end
+
+  defp copy_netrc(df) do
+    if File.exists?("deploy/.netrc") do
+      df
+      |> copy("deploy/.netrc /root/")
     else
       df
     end
@@ -148,6 +158,7 @@ defmodule DockerBuild.DockerfileGenerator do
       !/apps
       !/config
       !/deploy/ssh_keys
+      !/deploy/.netrc
       !/lib
       !/priv
       /priv/static

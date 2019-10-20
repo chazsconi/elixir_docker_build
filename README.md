@@ -77,9 +77,9 @@ The following additional config values are available:
   * `:umbrella_apps` - list of apps in an umbrella project.  If not set then the project is
   assumed to be a non-umbrella project.
 
-### Adding ssh keys to the build stage
+### Adding an ssh to the build stage
 
-You can add these in `deploy/ssh_keys`.  Typically you would add a private and public key, e.g.
+You can add this in `deploy/ssh_keys`.  Add a public and private key, e.g.
 `id_rsa` and `id_rsa.pub`.  They will be copied to the `/root/.ssh` folder in the build
 stage docker image.
 
@@ -104,6 +104,30 @@ contents of `id_rsa.pub`.
 plugins: [
   {DockerBuild.Plugins.KnownHosts, hosts: ["github.com"]}
 ]
+```
+
+N.B.  You can only add one ssh key using this method.  Github currently does not permit
+re-use of deployment keys in different repos, so if you have multiple private repos that are
+used by your project then this will not work.  Even if multiple ssh keys could be added, then
+when attempting to clone the repo, git would not know which one to use and does not retry if
+the first key fails.
+
+An alternative mechanism for cloning private repos is to use https authentication.  This can
+be done by creating a personal access token in github and then specifying the git URL with the
+authentication details. e.g. `git clone https://username:token@github.com/username/repository.git`
+
+Alternatively provide a curl `.netrc` file (see below)
+
+### Adding a curl .netrc file
+
+You can add this in `deploy/.netrc`.  This can be used to clone dependencies from a private git
+repo using a personal access token.  This will be used by `curl` when cloning the repos.
+
+Example `deploy/.netrc` file contents:
+```
+machine github.com
+login <github username>
+password <gitub personal access token>
 ```
 
 ## Plugin System
