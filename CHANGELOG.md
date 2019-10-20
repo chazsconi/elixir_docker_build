@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.2.0
+
+* Enhancements
+  * Allow adding curl .netrc file
+
+* Bug fixes
+  * Create .ssh folder for KnownHosts plugin if it doen't exist
+
+
 ## v0.1.2
 
 * Bug fixes
