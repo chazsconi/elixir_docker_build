@@ -11,7 +11,7 @@ defmodule DockerBuild.Plugins.KnownHosts do
     case plugin_config(df, :hosts) do
       hosts when is_list(hosts) ->
         df
-        |> run("ssh-keyscan #{Enum.join(hosts, " ")} >> ~/.ssh/known_hosts")
+        |> run("mkdir -p ~/.ssh && ssh-keyscan #{Enum.join(hosts, " ")} >> ~/.ssh/known_hosts")
 
       _ ->
         raise ArgumentError, message: "#{__MODULE__} must provide :hosts as list"
