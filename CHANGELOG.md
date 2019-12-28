@@ -1,12 +1,20 @@
 # Changelog
 
+## v0.3.0
+
+* Enhancements
+  * Support for Elixir 1.9 built-in releases
+
+* Bug fixes
+  * Ensure correct npm version is installed
+
 ## v0.2.0
 
 * Enhancements
   * Allow adding curl .netrc file
 
 * Bug fixes
-  * Create .ssh folder for KnownHosts plugin if it doen't exist
+  * Create .ssh folder for KnownHosts plugin if it doesn't exist
 
 
 ## v0.1.2
