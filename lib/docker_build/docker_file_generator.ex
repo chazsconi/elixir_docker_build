@@ -27,7 +27,7 @@ defmodule DockerBuild.DockerfileGenerator do
       "apt-get update",
       "apt-get install -y curl",
       "curl -sL https://deb.nodesource.com/setup_8.x | bash -",
-      "apt-get install -y nodejs"
+      "apt-get install -y nodejs=8.17.0-1nodesource1"
     ])
     |> run(["mix local.hex --force", "mix local.rebar --force"])
     |> copy_ssh_keys()
@@ -50,12 +50,8 @@ defmodule DockerBuild.DockerfileGenerator do
     |> copy("/ /app")
     |> run("mix compile")
     |> run("mix phx.digest")
-    |> run("mix distillery.release")
-    |> run([
-      "RELEASE_DIR=`ls -d _build/#{Config.mix_env(df)}/rel/#{Config.app_name(df)}/releases/*/`",
-      "mkdir /export",
-      "tar -xf \"$RELEASE_DIR/#{Config.app_name(df)}.tar.gz\" -C /export"
-    ])
+    |> build_release(Config.release_manager(df))
+    |> export_release(Config.release_manager(df))
   end
 
   defp copy_umbrella_app_mix_files(df, []), do: df
@@ -127,6 +123,23 @@ defmodule DockerBuild.DockerfileGenerator do
     df
   end
 
+  defp build_release(df, :distillery), do: run(df, "mix distillery.release")
+  defp build_release(df, :elixir), do: run(df, "mix release")
+
+  defp export_release(df, :distillery) do
+    df
+    |> run([
+      "RELEASE_DIR=`ls -d _build/#{Config.mix_env(df)}/rel/#{Config.app_name(df)}/releases/*/`",
+      "mkdir /export",
+      "tar -xf \"$RELEASE_DIR/#{Config.app_name(df)}.tar.gz\" -C /export"
+    ])
+  end
+
+  defp export_release(df, :elixir) do
+    df
+    |> run("mv _build/#{Config.mix_env(df)}/rel/#{Config.app_name(df)} /export")
+  end
+
   defp before_deps_get(df) do
     Config.plugins(df)
     |> Enum.reduce(df, fn plugin, df ->
@@ -147,10 +160,17 @@ defmodule DockerBuild.DockerfileGenerator do
     |> run(["apt-get update", "apt-get -y install openssl"])
     |> env("LANG=C.UTF-8")
     |> copy("--from=builder /export/ /opt/app")
-
     # Set default entrypoint and command
-    |> entrypoint(["/opt/app/bin/#{Config.app_name(df)}"])
-    |> cmd(["foreground"])
+    |> (fn df ->
+          if Config.release_manager(df) == :distillery do
+            df
+            |> entrypoint(["/opt/app/bin/#{Config.app_name(df)}"])
+            |> cmd(["foreground"])
+          else
+            df
+            |> cmd(["/opt/app/bin/#{Config.app_name(df)}", "start"])
+          end
+        end).()
   end
 
   defp base_docker_ignore(_config) do

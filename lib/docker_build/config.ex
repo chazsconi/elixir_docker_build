@@ -86,4 +86,17 @@ defmodule DockerBuild.Config do
 
   @doc "Selected `MIX_ENV`"
   def mix_env(context), do: config(context, :env)
+
+  @doc "Manager to use to create the release.  Defaults to distillery for Elixir >= 1.9.0"
+  def release_manager(context) do
+    case config(context, :release_manager) do
+      nil ->
+        if Version.compare(elixir_version(context), "1.9.0") == :lt,
+          do: :distillery,
+          else: :elixir
+
+      v ->
+        v
+    end
+  end
 end

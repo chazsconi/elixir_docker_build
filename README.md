@@ -15,7 +15,7 @@ def deps do
 end
 ```
 
-You also need to add distillery to your project.  Normally this is done with:
+If you are using Elixir < 1.9.0 you also need to add distillery to your project.  Normally this is done with:
 
 ```elixir
 def deps do
@@ -25,7 +25,7 @@ def deps do
 end
 ```
 
-Then run `mix distillery.init` to create an initially distillery configuration file.
+..then run `mix distillery.init` to create an initially distillery configuration file.
 
 ## Basic Use
 
@@ -40,7 +40,7 @@ you are using webpack to compile assets.
 config :docker_build, DockerBuild.Build,
   plugins: [DockerBuild.Plugins.Webpack],
   app_name: :my_project,
-  elixir_version: "1.8.1",
+  elixir_version: "1.9.1",
   docker_image: "docker.registry.url/my_project:production"
 ```
 
@@ -76,6 +76,8 @@ The following additional config values are available:
   include files by prefixing them with `!`.
   * `:umbrella_apps` - list of apps in an umbrella project.  If not set then the project is
   assumed to be a non-umbrella project.
+  * `:release_manager` - if using Elixir >= 1.9.0 then Elixir's built in release mechanism is used
+  by default to create a release.  However, if you still wish to use distillery, set this to `:distillery`
 
 ### Adding an ssh to the build stage
 
@@ -202,3 +204,10 @@ Either:
   * Make `assets_path:` config option mandatory so this can be used for apps without assets.
 
 ### Extract SSH Keys copy to plugin
+
+### Add Migration plugin
+  * This would need to add a `entrypoint.sh` to the image which would take a command which would
+  either be `start` or `migrate` to run the migrations.
+  * This could also generate the code needed to run migrations either via a library function
+  or a macro.  This could be tricky as currently the library only runs in `MIX_ENV=dev`
+  * Alternatively add support for tasks, one of which could by `migrate`
