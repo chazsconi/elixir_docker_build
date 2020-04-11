@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.1
+
+* Updates
+  * Use npm 10 as npm 8 is deprecated and causes a 20s delay on install
+
 ## v0.3.0
 
 * Enhancements
