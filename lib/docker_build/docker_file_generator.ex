@@ -156,7 +156,7 @@ defmodule DockerBuild.DockerfileGenerator do
 
   def release_stage(df) do
     df
-    |> from("ubuntu:bionic")
+    |> from(Config.release_stage_base_image(df))
     |> run(["apt-get update", "apt-get -y install openssl"])
     |> env("LANG=C.UTF-8")
     |> copy("--from=builder /export/ /opt/app")
