@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.2
+
+* Bug fixes
+  * Release base image depends on Elixir version.  Previously Elixir 1.9 could fail
+  on boot due to missing runtime libraries.
+
 ## v0.3.1
 
 * Updates
