@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.3
+
+* Bug fixes
+  * Use npm 10.22.0 as 10.20.0 no longer available
+
 ## v0.3.2
 
 * Bug fixes
