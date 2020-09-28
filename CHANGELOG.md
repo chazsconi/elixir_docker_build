@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.4
+
+* Bug fixes
+  * Do not specify a specific version of npm to install as this fails when
+  package is no longer available
+
 ## v0.3.3
 
 * Bug fixes
