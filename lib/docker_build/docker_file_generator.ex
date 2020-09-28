@@ -27,7 +27,7 @@ defmodule DockerBuild.DockerfileGenerator do
       "apt-get update",
       "apt-get install -y curl",
       "curl -sL https://deb.nodesource.com/setup_10.x | bash -",
-      "apt-get install -y nodejs=10.22.0-1nodesource1"
+      "apt-get install -y nodejs"
     ])
     |> run(["mix local.hex --force", "mix local.rebar --force"])
     |> copy_ssh_keys()
