@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.4.0
+### Breaking changes
+- The configuration is now in the `docker_build:` entry in the `project/0` within `mix.exs` instead of in `dev.exs`.
+See [README.md](README.md) for details.
+
 ## v0.3.4
 
 * Bug fixes
