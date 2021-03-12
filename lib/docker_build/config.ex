@@ -2,23 +2,32 @@ defmodule DockerBuild.Config do
   @moduledoc "Stores config for builder and plugins"
   alias __MODULE__
   alias DockerBuild.Dockerfile
+  require Logger
   defstruct base_config: [], plugin_configs: []
 
   @doc """
-  Load the config from the application env
+  Load the config from the mix project
 
   ## Options
    * `env` - environment to be used.  Defaults to `prod`
   """
-  def load_from_application_env(opts) do
-    config = Application.get_env(:docker_build, DockerBuild.Build)
+  def load(opts) do
+    config =
+      case Mix.Project.config()[:docker_build] do
+        nil ->
+          Mix.raise("Missing `:docker_build` entry in `project/0` in `mix.exs`")
+
+        config ->
+          config
+      end
+
     env = Keyword.fetch!(opts, :env)
 
     plugin_configs =
       config[:plugins]
       |> Enum.map(fn
         {plugin, config} -> {plugin, config}
-        plugin -> {plugin, Application.get_env(:docker_build, plugin, [])}
+        plugin -> {plugin, []}
       end)
 
     base_config =
@@ -51,6 +60,17 @@ defmodule DockerBuild.Config do
     Keyword.keys(plugin_configs)
   end
 
+  @doc "Get the main config for a given key - raise if it is nil"
+  def config!(context, key) do
+    case config(context, key) do
+      nil ->
+        raise ArgumentError, "Config key :#{key} is missing"
+
+      v ->
+        v
+    end
+  end
+
   @doc "Get the main config for a given key"
   def config(context, key)
 
@@ -73,7 +93,7 @@ defmodule DockerBuild.Config do
   def assets_dest_path(context), do: "/app/#{assets_path(context)}"
 
   @doc "Name of the app"
-  def app_name(context), do: config(context, :app_name)
+  def app_name(context), do: config!(context, :app_name)
 
   @doc "List of umbrella apps in project"
   def umbrella_apps(context), do: config(context, :umbrella_apps) || []
@@ -82,10 +102,13 @@ defmodule DockerBuild.Config do
   def umbrella_app?(context), do: umbrella_apps(context) != nil
 
   @doc "Project elixir version"
-  def elixir_version(context), do: config(context, :elixir_version)
+  def elixir_version(context), do: config!(context, :elixir_version)
 
   @doc "Selected `MIX_ENV`"
-  def mix_env(context), do: config(context, :env)
+  def mix_env(context), do: config!(context, :env)
+
+  @doc "Gets the docker image"
+  def docker_image(context), do: config!(context, :docker_image)
 
   @doc "Manager to use to create the release.  Defaults to distillery for Elixir >= 1.9.0"
   def release_manager(context) do

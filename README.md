@@ -31,18 +31,29 @@ end
 
 ### Add configuration
 
-Create the following entries in `config/dev.exs`.  As you will run the `mix` tasks in the
-development environment you should only add them here.  This assumes that
-you are using webpack to compile assets.
+Add the following entry in `mix.exs`: 
 
 ```elixir
-# config/dev.exs
-config :docker_build, DockerBuild.Build,
-  plugins: [DockerBuild.Plugins.Webpack],
-  app_name: :my_project,
-  elixir_version: "1.9.1",
-  docker_image: "docker.registry.url/my_project:production"
+# mix.exs
+  def project do
+    [
+      ...
+      docker_build: docker_build(),
+      ...
+    ]
+  end
+
+  defp docker_build do
+    [
+      plugins: [DockerBuild.Plugins.Webpack],
+      app_name: :my_project,
+      elixir_version: "1.9.1",
+      docker_image: "docker.registry.url/my_project:production"
+    ]
+  end
 ```
+
+This example assumes that you are using webpack to compile assets.
 
 ### Build docker image
 
@@ -147,20 +158,6 @@ config :docker_build, DockerBuild.Build,
   ...
 ```
 
-If complex config is required the plugin can just be listed with its module name in the
-`:plugins` config key and separate config can be given for the module:
-
-```elixir
-# config/dev.exs
-config :docker_build, DockerBuild.Build,
-  plugins: [PluginModule1, PluginModule2, PluginModule3],
-  ...
-
-config :docker_build, PluginModule2,
-  foo1: :bar1,
-  foo2: :bar2
-```
-
 There are several plugins already included in the project.
 
 ## Troubleshooting
@@ -187,8 +184,6 @@ config :my_app, MyApp.Endpoint,
 The environment to build under (i.e. what `MIX_ENV` is set to in Docker) is set from the command line.  This has the following advantage over taking the current value of `MIX_ENV` when invoking the task:
 
 1. When building a `prod` release the project and dependencies do not need to be compiled locally with `MIX_ENV=prod` just to run the mix task.
-
-2. The configuration for the build can be placed in `config/dev.exs` and so will not be included in `sys.config` when the release is built by Distillery.  You may have secrets in here you do not want in your final docker image.
 
 ## TODO
 

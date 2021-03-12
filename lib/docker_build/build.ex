@@ -7,7 +7,7 @@ defmodule DockerBuild.Build do
 
   @doc "Generates the Dockerfile and .dockerignore and then builds the docker image"
   def run(opts) do
-    config = Config.load_from_application_env(opts)
+    config = Config.load(opts)
 
     DockerfileGenerator.generate_dockerignore(config)
     |> save_dockerignore()
@@ -18,7 +18,7 @@ defmodule DockerBuild.Build do
 
     DockerfileGenerator.generate_dockerfile(config)
     |> save_dockerfile()
-    |> docker_build()
+    |> docker_build(config)
   end
 
   defp save_dockerfile(%Dockerfile{} = df) do
@@ -31,14 +31,8 @@ defmodule DockerBuild.Build do
     File.write!(".dockerignore", Enum.join(dockerignore, "\n"))
   end
 
-  defp docker_build(path) do
+  defp docker_build(path, config) do
     # Use Mix.Shell as output is echoed to command line as it runs
-    Mix.Shell.IO.cmd("docker build -f #{path} . -t #{docker_image()}", [])
-  end
-
-  defp docker_image, do: config(:docker_image)
-
-  defp config(key) do
-    Application.get_env(:docker_build, __MODULE__)[key]
+    Mix.Shell.IO.cmd("docker build -f #{path} . -t #{Config.docker_image(config)}", [])
   end
 end
