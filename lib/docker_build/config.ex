@@ -131,5 +131,7 @@ defmodule DockerBuild.Config do
       # Should probably be debian:stretch but this has worked so far
       do: "ubuntu:bionic",
       else: "debian:buster"
+
+    # Or bullseye for 1.12+
   end
 end
