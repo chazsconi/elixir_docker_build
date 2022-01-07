@@ -29,6 +29,7 @@ defmodule DockerBuild.Config do
         {plugin, config} -> {plugin, config}
         plugin -> {plugin, []}
       end)
+      |> add_plugin_deps()
 
     base_config =
       config
@@ -39,6 +40,23 @@ defmodule DockerBuild.Config do
       base_config: base_config,
       plugin_configs: plugin_configs
     }
+  end
+
+  defp add_plugin_deps(plugin_configs) do
+    existing_plugins =
+      plugin_configs
+      |> Enum.map(fn {plugin, _} -> plugin end)
+
+    extra_plugin_configs =
+      existing_plugins
+      |> Enum.reduce(MapSet.new(), fn plugin, acc ->
+        MapSet.union(acc, MapSet.new(plugin.deps()))
+      end)
+      |> MapSet.to_list()
+      |> Enum.filter(&(&1 not in existing_plugins))
+      |> Enum.map(&{&1, []})
+
+    plugin_configs ++ extra_plugin_configs
   end
 
   @doc "Get the config for a given plugin and key"
@@ -60,6 +78,13 @@ defmodule DockerBuild.Config do
     Keyword.keys(plugin_configs)
   end
 
+  @doc "Gets a list of plugins with the given dep"
+  def plugins_with_dep(context, dep) do
+    context
+    |> plugins()
+    |> Enum.filter(fn plugin -> dep in plugin.deps() end)
+  end
+
   @doc "Get the main config for a given key - raise if it is nil"
   def config!(context, key) do
     case config(context, key) do
@@ -79,18 +104,6 @@ defmodule DockerBuild.Config do
   end
 
   def config(%Dockerfile{config: config}, key), do: config(config, key)
-
-  # Path to assets within project.  Defaults to `assets`
-  defp assets_path(context) do
-    path = config(context, :assets_path) || "assets"
-    String.trim_leading(path, "/")
-  end
-
-  @doc "Source path of assets (used for docker `COPY`)"
-  def assets_source_path(context), do: "/" <> assets_path(context)
-
-  @doc "Destination path of assets in docker build image"
-  def assets_dest_path(context), do: "/app/#{assets_path(context)}"
 
   @doc "Name of the app"
   def app_name(context), do: config!(context, :app_name)
@@ -131,5 +144,7 @@ defmodule DockerBuild.Config do
       # Should probably be debian:stretch but this has worked so far
       do: "ubuntu:bionic",
       else: "debian:buster"
+
+    # Or bullseye for 1.12+
   end
 end
