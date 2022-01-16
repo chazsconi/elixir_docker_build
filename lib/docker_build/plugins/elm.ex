@@ -12,11 +12,16 @@ defmodule DockerBuild.Plugins.Elm do
   """
 
   use DockerBuild.Plugins
+  use DockerBuild.Plugins.AssetsPlugins
+  alias DockerBuild.Plugins.Assets
+
+  @impl DockerBuild.Plugins
+  def deps, do: [Assets]
 
   @impl DockerBuild.Plugins
   @doc "Used to add elm build paths to .dockerignore"
   def extra_dockerignore(config) do
-    ~w(#{Config.assets_source_path(config)}/elm_build #{Config.assets_source_path(config)}/elm-stuff)
+    ~w(#{Assets.assets_source_path(config)}/elm_build #{Assets.assets_source_path(config)}/elm-stuff)
   end
 
   @impl DockerBuild.Plugins
@@ -25,7 +30,7 @@ defmodule DockerBuild.Plugins.Elm do
     if plugin_config(df, :use_elm_install), do: install_elm_install(df), else: df
   end
 
-  @impl DockerBuild.Plugins
+  @impl DockerBuild.Plugins.AssetsPlugins
   @doc "Used to run elm_install"
   def before_assets_copy(df) do
     if plugin_config(df, :use_elm_install), do: run_elm_install(df), else: df
@@ -38,7 +43,7 @@ defmodule DockerBuild.Plugins.Elm do
 
   defp run_elm_install(df) do
     df
-    |> copy("#{Config.assets_source_path(df)}/elm-package.json #{Config.assets_dest_path(df)}/")
-    |> run(["cd #{Config.assets_dest_path(df)}", "elm-install"])
+    |> copy("#{Assets.assets_source_path(df)}/elm-package.json #{Assets.assets_dest_path(df)}/")
+    |> run(["cd #{Assets.assets_dest_path(df)}", "elm-install"])
   end
 end
