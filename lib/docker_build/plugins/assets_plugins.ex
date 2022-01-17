@@ -2,7 +2,7 @@ defmodule DockerBuild.Plugins.AssetsPlugins do
   @moduledoc """
   A behaviour for a plugin for Assets that implements additional callbacks for
   * before_assets_copy
-  * asets_compile_commmand
+  * assets_compile_commmand
   """
 
   @typedoc "The dockerfile"
@@ -16,7 +16,7 @@ defmodule DockerBuild.Plugins.AssetsPlugins do
 
   Only one plugin should be used that implements this function.
   """
-  @callback assets_compile_command(config) :: [String.t()]
+  @callback assets_compile_command(config) :: [String.t()] | nil
 
   @doc "Invoked before copying assets into the docker image"
   @callback before_assets_copy(df) :: df
