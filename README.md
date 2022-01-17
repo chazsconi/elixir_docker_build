@@ -81,7 +81,6 @@ However, this will probably fail if your project relies on environment variables
 
 The following additional config values are available:
 
-  * `:assets_path` - path the assets within your project. Defaults to `assets`.
   * `:extra_dockerignore` - a list of paths to add to the generated `.dockerignore` files. By
   default all files are excluded so it is likely you will want to use this to explicitly
   include files by prefixing them with `!`.
@@ -89,6 +88,21 @@ The following additional config values are available:
   assumed to be a non-umbrella project.
   * `:release_manager` - if using Elixir >= 1.9.0 then Elixir's built in release mechanism is used
   by default to create a release.  However, if you still wish to use distillery, set this to `:distillery`
+
+### Using assets
+
+Add the `Assets` plugin:
+```
+plugins: [
+  {DockerBuild.Plugins.Assets, assets_path: "/path/to/assets", nodejs_major_version: 14}
+]
+```
+The default configuration is:
+  `:assets_path` - `assets`
+  `:nodejs_major_version` - 16
+
+If you use the `Webpack` plugin and don't need to change any `Assets` default, you don't
+need to explicitly include it as the `Webpack` plugin will include it automatically.
 
 ### Adding an ssh to the build stage
 
@@ -190,13 +204,6 @@ The environment to build under (i.e. what `MIX_ENV` is set to in Docker) is set 
 ### Check mandatory config params
 
 Currently a protocol error is shown if the config is missing.
-
-### Optional Assets
-
-Either:
-  * Add assets as a plugin, and have some plugin hierarchy, deps resolution or be able to set
-  plugin config options from another plugin - e.g. `assets_compile_command:` from webpack/brunch plugin.
-  * Make `assets_path:` config option mandatory so this can be used for apps without assets.
 
 ### Extract SSH Keys copy to plugin
 

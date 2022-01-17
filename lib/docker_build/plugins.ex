@@ -21,6 +21,9 @@ defmodule DockerBuild.Plugins do
   @typedoc "The dockerfile config"
   @type config() :: %DockerBuild.Config{}
 
+  @doc "Dependent plugins"
+  @callback deps() :: [module()]
+
   @doc """
   Invoked when creating the .dockerignore file.
 
@@ -28,23 +31,20 @@ defmodule DockerBuild.Plugins do
   """
   @callback extra_dockerignore(config) :: [String.t()]
 
-  @doc """
-  Invoked to discover the command to use for compiling assets.
+  @doc "Invoked at start to install any build dependencies - e.g linux packages"
+  @callback install_build_deps(df) :: df
 
-  Only one plugin should be used that implements this function.
-  """
-  @callback assets_compile_command(config) :: [String.t()]
-
-  @doc "Invoked before copying assets into the docker image"
-  @callback before_assets_copy(df) :: df
+  @doc "Invoked before copying all source files"
+  @callback before_source_copy(df) :: df
 
   @doc "Invoked before getting mix dependencies"
   @callback before_deps_get(df) :: df
 
-  @optional_callbacks extra_dockerignore: 1,
-                      assets_compile_command: 1,
-                      before_assets_copy: 1,
-                      before_deps_get: 1
+  @optional_callbacks deps: 0,
+                      install_build_deps: 1,
+                      extra_dockerignore: 1,
+                      before_deps_get: 1,
+                      before_source_copy: 1
 
   defmacro __using__(_opts) do
     quote do
@@ -53,16 +53,19 @@ defmodule DockerBuild.Plugins do
       @behaviour DockerBuild.Plugins
 
       @doc false
+      def deps, do: []
+
+      @doc false
       def extra_dockerignore(config), do: []
 
       @doc false
-      def assets_compile_command(config), do: nil
+      def install_build_deps(df), do: df
 
       @doc false
       def before_deps_get(df), do: df
 
       @doc false
-      def before_assets_copy(df), do: df
+      def before_source_copy(df), do: df
 
       @doc false
       def plugin_config(context, key), do: Config.plugin_config(context, __MODULE__, key)

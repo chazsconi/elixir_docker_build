@@ -5,7 +5,7 @@ defmodule DockerBuild.MixProject do
     [
       app: :docker_build,
       version: "0.4.0",
-      elixir: ">= 1.6.0",
+      elixir: ">= 1.9.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: description(),
@@ -23,7 +23,9 @@ defmodule DockerBuild.MixProject do
   end
 
   defp deps do
-    [{:ex_doc, ">= 0.0.0", only: :dev}]
+    [
+      {:ex_doc, "~> 0.22", only: :dev}
+    ]
   end
 
   defp description do
