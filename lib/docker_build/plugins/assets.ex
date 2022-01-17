@@ -1,7 +1,15 @@
 defmodule DockerBuild.Plugins.Assets do
   @moduledoc """
   Installs and compiles assets
+
+  ## Config options
+  * `nodejs_major_version` - As integer.  Defaults to 16 (as nvm is not used, installing an exact version is not supported)
+
   """
+
+  @default_nodejs_major_version 16
+  @supported_nodejs_major_versions [12, 14, 16, 17, 18]
+
   use DockerBuild.Plugins
   require Logger
 
@@ -19,7 +27,7 @@ defmodule DockerBuild.Plugins.Assets do
     |> run([
       "apt-get update",
       "apt-get install -y curl",
-      "curl -sL https://deb.nodesource.com/setup_12.x | bash -",
+      "curl -sL https://deb.nodesource.com/setup_#{nodejs_major_version(df)}.x | bash -",
       "apt-get install -y nodejs"
     ])
   end
@@ -86,7 +94,19 @@ defmodule DockerBuild.Plugins.Assets do
     Config.plugins_with_dep(context, __MODULE__)
   end
 
-  # Path to assets within project.  Defaults to `assets`
+  defp nodejs_major_version(context) do
+    version = plugin_config(context, :nodejs_major_version) || @default_nodejs_major_version
+
+    if version in @supported_nodejs_major_versions do
+      version
+    else
+      Mix.raise(
+        "Invalid nodejs major version specified #{inspect(version)} - supported: #{Enum.join(@supported_nodejs_major_versions, ",")}"
+      )
+    end
+  end
+
+  @doc "Path to assets within project.  Defaults to `assets`"
   def assets_path(context) do
     path = plugin_config(context, :assets_path) || "assets"
     String.trim_leading(path, "/")

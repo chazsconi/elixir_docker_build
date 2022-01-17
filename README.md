@@ -191,13 +191,6 @@ The environment to build under (i.e. what `MIX_ENV` is set to in Docker) is set 
 
 Currently a protocol error is shown if the config is missing.
 
-### Optional Assets
-
-Either:
-  * Add assets as a plugin, and have some plugin hierarchy, deps resolution or be able to set
-  plugin config options from another plugin - e.g. `assets_compile_command:` from webpack/brunch plugin.
-  * Make `assets_path:` config option mandatory so this can be used for apps without assets.
-
 ### Extract SSH Keys copy to plugin
 
 ### Add Migration plugin
