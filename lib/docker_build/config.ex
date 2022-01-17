@@ -136,15 +136,12 @@ defmodule DockerBuild.Config do
     end
   end
 
+  def set_release_stage_base_image(%Config{base_config: base_config} = config, base_image) do
+    %Config{config | base_config: Keyword.put(base_config, :release_stage_base_image, base_image)}
+  end
+
   @doc "The image to base the release stage on - could be made configurable"
   def release_stage_base_image(context) do
-    # Before 1.9 the images use erlang:21 which is based on debian:stretch
-    # Later versions use erlang:22 which is based on debian:buster
-    if Version.compare(elixir_version(context), "1.9.0") == :lt,
-      # Should probably be debian:stretch but this has worked so far
-      do: "ubuntu:bionic",
-      else: "debian:buster"
-
-    # Or bullseye for 1.12+
+    config!(context, :release_stage_base_image)
   end
 end
