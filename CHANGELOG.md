@@ -1,8 +1,22 @@
 # Changelog
 
+## v0.5.0
+### Enhancements
+* `Assets` are extracted into a separate plugin and allows the NodeJS version to be configured.  This defaults to v16.
+See [README.md](README.md) and below for details.
+
+### Breaking changes
+* With the `Assets` plugin extraction the default Nodejs version has been changed from v12 to v16.  However, this can
+be now be set explicity to an older version.  See the `Assets` plugin for details.
+* The `assets_path` configuration is now within the `Assets` plugin and needs to be moved here if you do not use the default value of `assets`.
+
+### Removed
+* Brunch plugin
+* Support for Elixir < 1.9
+
 ## v0.4.0
 ### Breaking changes
-- The configuration is now in the `docker_build:` entry in the `project/0` within `mix.exs` instead of in `dev.exs`.
+* The configuration is now in the `docker_build:` entry in the `project/0` within `mix.exs` instead of in `dev.exs`.
 See [README.md](README.md) for details.
 
 ## v0.3.4

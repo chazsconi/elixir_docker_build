@@ -4,7 +4,7 @@ defmodule DockerBuild.MixProject do
   def project do
     [
       app: :docker_build,
-      version: "0.4.0",
+      version: "0.5.0",
       elixir: ">= 1.9.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -23,11 +23,8 @@ defmodule DockerBuild.MixProject do
   end
 
   defp deps do
-    # Later versions need Elixir 1.10
     [
-      {:ex_doc, "~> 0.22.6", only: :dev},
-      # Only included to get pre 1.10 version
-      {:earmark_parser, "1.4.10", only: :dev}
+      {:ex_doc, "~> 0.22", only: :dev}
     ]
   end
 
