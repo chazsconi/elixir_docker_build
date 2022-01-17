@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+### Other
+* Removed references to Elixir <= v1.9 defaulting to distillery
+
 ## v0.5.0
 ### Enhancements
 * `Assets` are extracted into a separate plugin and allows the NodeJS version to be configured.  This defaults to v16.

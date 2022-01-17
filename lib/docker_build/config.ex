@@ -123,17 +123,9 @@ defmodule DockerBuild.Config do
   @doc "Gets the docker image"
   def docker_image(context), do: config!(context, :docker_image)
 
-  @doc "Manager to use to create the release.  Defaults to distillery for Elixir >= 1.9.0"
+  @doc "Manager to use to create the release.  Defaults to :elixir, but can be set to :distillery"
   def release_manager(context) do
-    case config(context, :release_manager) do
-      nil ->
-        if Version.compare(elixir_version(context), "1.9.0") == :lt,
-          do: :distillery,
-          else: :elixir
-
-      v ->
-        v
-    end
+    config(context, :release_manager) || :elixir
   end
 
   def set_release_stage_base_image(%Config{base_config: base_config} = config, base_image) do

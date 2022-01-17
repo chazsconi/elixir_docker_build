@@ -10,22 +10,10 @@ by adding `docker_build` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:docker_build, "~> 0.1.0", runtime: false, only: :dev}
+    {:docker_build, "~> 0.5.0", runtime: false, only: :dev}
   ]
 end
 ```
-
-If you are using Elixir < 1.9.0 you also need to add distillery to your project.  Normally this is done with:
-
-```elixir
-def deps do
-  [
-    {:distillery, "~> 2.1"},
-  ]
-end
-```
-
-..then run `mix distillery.init` to create an initially distillery configuration file.
 
 ## Basic Use
 
@@ -47,7 +35,7 @@ Add the following entry in `mix.exs`:
     [
       plugins: [DockerBuild.Plugins.Webpack],
       app_name: :my_project,
-      elixir_version: "1.9.1",
+      elixir_version: "1.12.3",
       docker_image: "docker.registry.url/my_project:production"
     ]
   end
@@ -86,8 +74,7 @@ The following additional config values are available:
   include files by prefixing them with `!`.
   * `:umbrella_apps` - list of apps in an umbrella project.  If not set then the project is
   assumed to be a non-umbrella project.
-  * `:release_manager` - if using Elixir >= 1.9.0 then Elixir's built in release mechanism is used
-  by default to create a release.  However, if you still wish to use distillery, set this to `:distillery`
+  * `:release_manager` - By default, the built-in release mechanism is used, however, if you wish to use distillery, set this to `:distillery`
 
 ### Using assets
 
@@ -200,6 +187,15 @@ The environment to build under (i.e. what `MIX_ENV` is set to in Docker) is set 
 1. When building a `prod` release the project and dependencies do not need to be compiled locally with `MIX_ENV=prod` just to run the mix task.
 
 ## TODO
+
+### Verify config keys are valid
+* Raise an error if unknown config or plugin config keys are supplied
+
+### Use .tool-versions
+* Provide an option to get the version from .tool-versions file
+
+### DOCKER_HOST
+* Allow a config for `:docker_host` so you don't need to pass with env var
 
 ### Check mandatory config params
 
