@@ -1,10 +1,15 @@
 # Changelog
 
-## Unreleased
+## v0.5.1
+
+### Bug fixes
+* Added `ca-certificates` package to release stage - this could have cause problems if using packages relying on the certificates to be installed
+
 ### Other
 * Removed references to Elixir <= v1.9 defaulting to distillery
 
 ## v0.5.0
+
 ### Enhancements
 * `Assets` are extracted into a separate plugin and allows the NodeJS version to be configured.  This defaults to v16.
 See [README.md](README.md) and below for details.
