@@ -113,7 +113,7 @@ defmodule DockerBuild.DockerfileGenerator do
   def release_stage(df) do
     df
     |> from(Config.release_stage_base_image(df))
-    |> run(["apt-get update", "apt-get -y install openssl"])
+    |> run(["apt-get update", "apt-get -y install openssl ca-certificates"])
     |> env("LANG=C.UTF-8")
     |> copy("--from=builder /export/ /opt/app")
     # Set default entrypoint and command
