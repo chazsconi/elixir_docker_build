@@ -10,7 +10,7 @@ by adding `docker_build` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:docker_build, "~> 0.5.0", runtime: false, only: :dev}
+    {:docker_build, "~> 0.6.0", runtime: false, only: :dev}
   ]
 end
 ```

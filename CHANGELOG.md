@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.0
+
+### Enhancements
+* Support custom plugins in own project
+* Add `before_assets_compile` callback in Assets plugin
+
 ## v0.5.1
 
 ### Bug fixes

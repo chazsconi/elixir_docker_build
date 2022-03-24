@@ -4,7 +4,7 @@ defmodule DockerBuild.MixProject do
   def project do
     [
       app: :docker_build,
-      version: "0.5.1",
+      version: "0.6.0",
       elixir: ">= 1.9.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
