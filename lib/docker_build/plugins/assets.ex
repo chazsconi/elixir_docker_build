@@ -38,6 +38,7 @@ defmodule DockerBuild.Plugins.Assets do
     |> install_assets_deps()
     |> before_assets_copy()
     |> copy_assets()
+    |> before_assets_compile()
     |> compile_assets()
   end
 
@@ -54,6 +55,13 @@ defmodule DockerBuild.Plugins.Assets do
     assets_plugins(df)
     |> Enum.reduce(df, fn plugin, df ->
       plugin.before_assets_copy(df)
+    end)
+  end
+
+  defp before_assets_compile(df) do
+    assets_plugins(df)
+    |> Enum.reduce(df, fn plugin, df ->
+      plugin.before_assets_compile(df)
     end)
   end
 
