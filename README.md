@@ -75,6 +75,7 @@ The following additional config values are available:
   * `:umbrella_apps` - list of apps in an umbrella project.  If not set then the project is
   assumed to be a non-umbrella project.
   * `:release_manager` - By default, the built-in release mechanism is used, however, if you wish to use distillery, set this to `:distillery`
+  * `:plugin_paths` - list of path to source code for custom plugins in your project (see below).  Defaults to `["docker_build/lib"]`.
 
 ### Using assets
 
@@ -91,7 +92,7 @@ The default configuration is:
 If you use the `Webpack` plugin and don't need to change any `Assets` default, you don't
 need to explicitly include it as the `Webpack` plugin will include it automatically.
 
-### Adding an ssh to the build stage
+### Adding an ssh key to the build stage
 
 You can add this in `deploy/ssh_keys`.  Add a public and private key, e.g.
 `id_rsa` and `id_rsa.pub`.  They will be copied to the `/root/.ssh` folder in the build
@@ -160,6 +161,12 @@ config :docker_build, DockerBuild.Build,
 ```
 
 There are several plugins already included in the project.
+
+### Custom plugins
+
+You can also create your own custom plugin in your project.  You should put the source code for this in
+`docker_build/lib` so it is outside the normal compile paths for Elixir and thefore not included in the build.  You can change this 
+using the `:plugin_paths` config key.
 
 ## Troubleshooting
 

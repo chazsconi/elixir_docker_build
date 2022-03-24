@@ -21,6 +21,11 @@ defmodule DockerBuild.Config do
           config
       end
 
+    # Get exta code for plugins
+    # This is so the code does not need to be in the normal code path of the project
+    plugin_paths = Keyword.get(opts, :plugin_paths, ["docker_build/lib"])
+    DockerBuild.Code.require_all(plugin_paths)
+
     env = Keyword.fetch!(opts, :env)
 
     plugin_configs =
