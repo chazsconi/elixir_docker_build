@@ -39,6 +39,7 @@ defmodule DockerBuild.DockerfileGenerator do
     # Speed up installing of node files
     |> before_source_copy()
     |> copy("/ /app")
+    |> before_compile()
     |> run("mix compile")
     |> run("mix phx.digest")
     |> build_release(Config.release_manager(df))
@@ -110,10 +111,25 @@ defmodule DockerBuild.DockerfileGenerator do
     end)
   end
 
+  defp before_compile(df) do
+    Config.plugins(df)
+    |> Enum.reduce(df, fn plugin, df ->
+      plugin.before_compile(df)
+    end)
+  end
+
+  defp install_runtime_deps(df) do
+    Config.plugins(df)
+    |> Enum.reduce(df, fn plugin, df ->
+      plugin.install_runtime_deps(df)
+    end)
+  end
+
   def release_stage(df) do
     df
     |> from(Config.release_stage_base_image(df))
     |> run(["apt-get update", "apt-get -y install openssl ca-certificates"])
+    |> install_runtime_deps()
     |> env("LANG=C.UTF-8")
     |> copy("--from=builder /export/ /opt/app")
     # Set default entrypoint and command
