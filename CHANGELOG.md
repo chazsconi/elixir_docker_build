@@ -1,5 +1,9 @@
 # Changelog
 
+### v0.7.0
+* Added `before_compile` and `install_runtime_deps` callback.  These can be used extra build or runtime
+  linux packages are required.
+
 ## v0.6.0
 
 ### Enhancements
