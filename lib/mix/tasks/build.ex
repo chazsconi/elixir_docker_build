@@ -10,26 +10,27 @@ defmodule Mix.Tasks.Docker.Build do
   ## Example
 
   `mix docker.build dev`
+
+  ## Options
+   * `--target` - stage to build.  Can be "builder" or "release".  Defaults to "release"
   """
 
   @doc false
   def run(args) do
-    {:ok, env} =
-      case args do
-        [] ->
-          {:ok, :prod}
+    {:ok, opts} =
+      case OptionParser.parse!(args, strict: [target: :string]) do
+        {opts, []} ->
+          {:ok, opts}
 
-        [env] ->
-          {:ok, env}
+        {opts, [env]} ->
+          {:ok, [{:env, env} | opts]}
 
         _ ->
           Mix.raise("Too many parameters")
           :error
       end
 
-    Mix.shell().info("Using env #{env}")
-
-    case Build.run(env: env) do
+    case Build.run(opts) do
       0 -> Mix.shell().info("Build done")
       n -> Mix.raise("Build failed. Exit code #{n}")
     end

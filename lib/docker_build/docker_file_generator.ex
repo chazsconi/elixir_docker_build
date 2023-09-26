@@ -127,7 +127,7 @@ defmodule DockerBuild.DockerfileGenerator do
 
   def release_stage(df) do
     df
-    |> from(Config.release_stage_base_image(df))
+    |> from("#{Config.release_stage_base_image(df)} as release")
     |> run(["apt-get update", "apt-get -y install openssl ca-certificates"])
     |> install_runtime_deps()
     |> env("LANG=C.UTF-8")

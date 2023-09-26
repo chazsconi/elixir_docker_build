@@ -26,8 +26,6 @@ defmodule DockerBuild.Config do
     plugin_paths = Keyword.get(opts, :plugin_paths, ["docker_build/lib"])
     DockerBuild.Code.require_all(plugin_paths)
 
-    env = Keyword.fetch!(opts, :env)
-
     plugin_configs =
       config[:plugins]
       |> Enum.map(fn
@@ -39,7 +37,8 @@ defmodule DockerBuild.Config do
     base_config =
       config
       |> Keyword.delete(:plugins)
-      |> Keyword.put(:env, env)
+      |> Keyword.put(:env, Keyword.get(opts, :env, :prod))
+      |> Keyword.put(:target, Keyword.get(opts, :target, "release"))
 
     %Config{
       base_config: base_config,
@@ -127,6 +126,9 @@ defmodule DockerBuild.Config do
 
   @doc "Gets the docker image"
   def docker_image(context), do: config!(context, :docker_image)
+
+  @doc "Gets the build target"
+  def target(context), do: config!(context, :target)
 
   @doc "Manager to use to create the release.  Defaults to :elixir, but can be set to :distillery"
   def release_manager(context) do

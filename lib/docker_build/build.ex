@@ -36,8 +36,17 @@ defmodule DockerBuild.Build do
   end
 
   defp docker_build(path, config) do
+    tag =
+      case Config.target(config) do
+        "release" -> Config.docker_image(config)
+        "builder" -> Config.docker_image(config) <> "-builder"
+      end
+
     # Use Mix.Shell as output is echoed to command line as it runs
-    Mix.Shell.IO.cmd("docker build -f #{path} . -t #{Config.docker_image(config)}", [])
+    cmd = "docker build -f #{path} . -t #{tag} --target #{Config.target(config)}"
+
+    Logger.info("Executing #{cmd}")
+    Mix.Shell.IO.cmd(cmd, [])
   end
 
   # As the build stage base image needs to match the release stage base image OS, we
