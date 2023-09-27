@@ -13,12 +13,13 @@ defmodule Mix.Tasks.Docker.Build do
 
   ## Options
    * `--target` - stage to build.  Can be "builder" or "release".  Defaults to "release"
+   * `--no-build` - just generate the Dockerfile and do not build
   """
 
   @doc false
   def run(args) do
     {:ok, opts} =
-      case OptionParser.parse!(args, strict: [target: :string]) do
+      case OptionParser.parse!(args, strict: [target: :string, no_build: :boolean]) do
         {opts, []} ->
           {:ok, opts}
 
