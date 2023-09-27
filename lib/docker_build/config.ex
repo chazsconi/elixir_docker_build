@@ -39,6 +39,7 @@ defmodule DockerBuild.Config do
       |> Keyword.delete(:plugins)
       |> Keyword.put(:env, Keyword.get(opts, :env, :prod))
       |> Keyword.put(:target, Keyword.get(opts, :target, "release"))
+      |> Keyword.put(:build?, not Keyword.get(opts, :no_build, false))
 
     %Config{
       base_config: base_config,
@@ -129,6 +130,9 @@ defmodule DockerBuild.Config do
 
   @doc "Gets the build target"
   def target(context), do: config!(context, :target)
+
+  @doc "If to build the image"
+  def build?(context), do: config!(context, :build?)
 
   @doc "Manager to use to create the release.  Defaults to :elixir, but can be set to :distillery"
   def release_manager(context) do
