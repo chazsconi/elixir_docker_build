@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Enhancements
+* `Assets` plugin - Support node v20
+* `Assets` plugin - Change node installation method to use package repository rather than deprecated curl script
+
+### Breaking changes
+* Set min elixir version to 1.11
+* `Assets` plugin - Remove versions below v16 is required as the new installation method
+  is only supported for >= v16.
+* `Webpack` plugin - Remove `--optimize-minimize` flag longer required for >= v4.
+* `Webpack` plugin - remove support for < v4.  It may still work but the assets will not be optimized due to
+  the flag being
+
 ### v0.7.0
 * Added `before_compile` and `install_runtime_deps` callback.  These can be used extra build or runtime
   linux packages are required.
