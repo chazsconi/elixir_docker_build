@@ -86,13 +86,13 @@ defmodule DockerBuild.Plugins.Assets do
 
     case plugins do
       [] ->
-        Logger.warn("No asset compile command given")
+        Logger.warning("No asset compile command given")
 
       [_] ->
         :ok
 
       _ ->
-        Logger.warn("Multiple asset compile commands given from #{inspect(plugins)}")
+        Logger.warning("Multiple asset compile commands given from #{inspect(plugins)}")
     end
 
     df
