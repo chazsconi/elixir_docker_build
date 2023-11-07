@@ -19,7 +19,7 @@ end
 
 ### Add configuration
 
-Add the following entry in `mix.exs`: 
+Add the following entry in `mix.exs`:
 
 ```elixir
 # mix.exs
@@ -82,7 +82,7 @@ The following additional config values are available:
 Add the `Assets` plugin:
 ```
 plugins: [
-  {DockerBuild.Plugins.Assets, assets_path: "/path/to/assets", nodejs_major_version: 14}
+  {DockerBuild.Plugins.Assets, assets_path: "/path/to/assets", nodejs_major_version: 20}
 ]
 ```
 The default configuration is:
@@ -165,7 +165,7 @@ There are several plugins already included in the project.
 ### Custom plugins
 
 You can also create your own custom plugin in your project.  You should put the source code for this in
-`docker_build/lib` so it is outside the normal compile paths for Elixir and thefore not included in the build.  You can change this 
+`docker_build/lib` so it is outside the normal compile paths for Elixir and thefore not included in the build.  You can change this
 using the `:plugin_paths` config key.
 
 ## Troubleshooting

@@ -1,6 +1,7 @@
 defmodule DockerBuild.Plugins.Webpack do
   @moduledoc """
   Complies assets using webpack
+  This supports Webpack >= v4
   """
   use DockerBuild.Plugins
   use DockerBuild.Plugins.AssetsPlugins
