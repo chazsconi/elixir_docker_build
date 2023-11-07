@@ -1,14 +1,17 @@
 # Changelog
 
-## Unreleased
+## v0.8.0
 
 ### Enhancements
 * Add `--no-build` and `--target` command line options
 * `Assets` plugin - Support node v20
 * `Assets` plugin - Change node installation method to use package repository rather than deprecated curl script
 
+### Bug fixes
+* Change `Logger.warn` to `Logger.warning` as caused compile warning.
+
 ### Breaking changes
-* Set min elixir version to 1.11
+* Set min elixir version to 1.11.  This is required due to the `Logger.warning` change.
 * `Assets` plugin - Remove versions below v16 is required as the new installation method
   is only supported for >= v16.
 * `Webpack` plugin - Remove `--optimize-minimize` flag longer required for >= v4.
