@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Enhancements
+* Add `--no-build` and `--target` command line options
 * `Assets` plugin - Support node v20
 * `Assets` plugin - Change node installation method to use package repository rather than deprecated curl script
 

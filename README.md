@@ -65,6 +65,12 @@ However, this will probably fail if your project relies on environment variables
 
 ## Advanced usage
 
+### Command line options
+
+The following options can be passed to the `mix` task
+  * `--no-build` - just generate the Dockerfile and do not build
+  * `--target` - stage to build.  Can be "builder" or "release".  Defaults to "release".
+
 ### Additional configuration
 
 The following additional config values are available:
