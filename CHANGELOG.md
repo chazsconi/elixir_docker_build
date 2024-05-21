@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.9.0
+
+### Enhancements
+* Add support for base images that use Debian bookworm
+
 ## v0.8.0
 
 ### Enhancements
