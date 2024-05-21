@@ -5,7 +5,7 @@ defmodule DockerBuild.Build do
   alias DockerBuild.Config
   require Logger
 
-  @supported_base_image_os_list ~w(debian:buster debian:bullseye)
+  @supported_base_image_os_list ~w(debian:buster debian:bullseye debian:bookworm)
   @doc "Generates the Dockerfile and .dockerignore and then builds the docker image"
   def run(opts) do
     config =
