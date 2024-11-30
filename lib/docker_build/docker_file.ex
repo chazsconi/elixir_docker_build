@@ -42,6 +42,9 @@ defmodule DockerBuild.Dockerfile do
   @doc "Docker `ENV arg`"
   def env(%DF{} = df, arg), do: add_line(df, "ENV", arg)
 
+  @doc "Docker `ARG arg`"
+  def arg(%DF{} = df, arg), do: add_line(df, "ARG", arg)
+
   @doc "Docker `CMD arg`.  If a list of `args` is given the the list is passed to `CMD`"
   def cmd(df, arg_or_args)
 

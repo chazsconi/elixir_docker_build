@@ -132,6 +132,10 @@ defmodule DockerBuild.DockerfileGenerator do
     |> install_runtime_deps()
     |> env("LANG=C.UTF-8")
     |> copy("--from=builder /export/ /opt/app")
+    # THis is used to inject the COMMIT_SHA env var into the container
+    # which can be used by the app
+    |> arg("COMMIT_SHA=\"<docker-default-commit-sha>\"")
+    |> env("COMMIT_SHA=$COMMIT_SHA")
     # Set default entrypoint and command
     |> (fn df ->
           if Config.release_manager(df) == :distillery do
