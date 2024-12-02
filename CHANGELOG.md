@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.0
+* Add `COMMIT_SHA` Docker ARG that sets corresponding environment variable.
+
 ## v0.9.0
 
 ### Enhancements
