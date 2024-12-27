@@ -82,6 +82,8 @@ The following additional config values are available:
   assumed to be a non-umbrella project.
   * `:release_manager` - By default, the built-in release mechanism is used, however, if you wish to use distillery, set this to `:distillery`
   * `:plugin_paths` - list of path to source code for custom plugins in your project (see below).  Defaults to `["docker_build/lib"]`.
+  * `:build_stage_base_image` - Base image to use for the builder.  Defaults to `elixir:#{elixir_version}`.  If specified this
+  the `:elixir_version` parameter is not required and ignored.
 
 ### Using assets
 

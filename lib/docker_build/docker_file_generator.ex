@@ -21,7 +21,7 @@ defmodule DockerBuild.DockerfileGenerator do
 
   defp build_stage(df) do
     df
-    |> from("elixir:#{Config.elixir_version(df)} as builder")
+    |> from("#{Config.build_stage_base_image(df)} as builder")
     |> install_build_deps()
     |> run(["mix local.hex --force", "mix local.rebar --force"])
     |> copy_ssh_keys()
@@ -91,6 +91,16 @@ defmodule DockerBuild.DockerfileGenerator do
   end
 
   defp install_build_deps(df) do
+    df
+    # The base image may not have git and make installed
+    |> run([
+      "apt-get update",
+      "apt-get install -y git make gcc"
+    ])
+    |> install_plugin_build_deps()
+  end
+
+  defp install_plugin_build_deps(df) do
     Config.plugins(df)
     |> Enum.reduce(df, fn plugin, df ->
       plugin.install_build_deps(df)

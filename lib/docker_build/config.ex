@@ -122,6 +122,9 @@ defmodule DockerBuild.Config do
   @doc "Project elixir version"
   def elixir_version(context), do: config!(context, :elixir_version)
 
+  def build_stage_base_image(context),
+    do: config(context, :build_stage_base_image) || "elixir:#{elixir_version(context)}"
+
   @doc "Selected `MIX_ENV`"
   def mix_env(context), do: config!(context, :env)
 

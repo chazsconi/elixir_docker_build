@@ -81,7 +81,7 @@ defmodule DockerBuild.Build do
     # This should return something like 'debian:buster'
     bash_cmd = "source /etc/os-release && echo -n $ID:$VERSION_CODENAME"
 
-    cmd = ~s|docker run --rm elixir:#{Config.elixir_version(config)} bash -c '#{bash_cmd}'|
+    cmd = ~s|docker run --rm #{Config.build_stage_base_image(config)} bash -c '#{bash_cmd}'|
 
     System.cmd("bash", ["-c", cmd])
   end
