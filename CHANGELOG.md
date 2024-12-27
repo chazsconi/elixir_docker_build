@@ -1,6 +1,17 @@
 # Changelog
 
+## v0.11.0
+
+### Enhancements
+* Add `:build_stage_base_image` param
+
+### Other
+* Install `git`, `make`, `gcc` in base image in case it is not there as it is requried by some
+  elixir libraries.
+
 ## v0.10.0
+
+### Enhancements
 * Add `COMMIT_SHA` Docker ARG that sets corresponding environment variable.
 
 ## v0.9.0
